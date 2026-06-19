@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Register - Karnataka AO Exam Master Revision Handbook{% endblock %}
+
+{% block content %}
+<div class="glass-container form-card">
+    <h1 class="form-title">Handbook Access Portal</h1>
+    <p class="form-subtitle">Register to instantly read the Karnataka AO Exam Last-Minute Revision Handbook online.</p>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #f9a8d4; padding: 0.75rem; border-radius: 8px; font-size: 0.9rem; margin-bottom: 1.5rem; text-align: center;">
+              {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form id="registrationForm" method="POST" action="/register">
+        <div class="form-group">
+            <label for="name" class="form-label">Full Name <span style="color: var(--accent-color);">*</span></label>
+            <input type="text" id="name" name="name" class="form-control" placeholder="Enter your full name" required minlength="3">
+            <span id="nameError" class="form-error"></span>
+        </div>
+        
+        <div class="form-group">
+            <label for="mobile" class="form-label">Mobile Number <span style="color: var(--accent-color);">*</span></label>
+            <input type="tel" id="mobile" name="mobile" class="form-control" placeholder="10-digit mobile number" required pattern="[0-9]{10}">
+            <span id="mobileError" class="form-error"></span>
+        </div>
+        
+        <div class="form-group">
+            <label for="college" class="form-label">College/University Name <span style="color: var(--accent-color);">*</span></label>
+            <input type="text" id="college" name="college" class="form-control" placeholder="Full name of your institution" required minlength="4">
+            <span id="collegeError" class="form-error"></span>
+        </div>
+        
+        <div class="form-group" style="margin-bottom: 2rem;">
+            <label for="email" class="form-label">Email Address <span style="color: var(--text-muted); font-size: 0.75rem;">(Optional)</span></label>
+            <input type="email" id="email" name="email" class="form-control" placeholder="example@email.com">
+        </div>
+        
+        <button type="submit" class="btn">
+            <i class="fa-solid fa-book-open"></i> Unlock Handbook
+        </button>
+    </form>
+</div>
+{% endblock %}

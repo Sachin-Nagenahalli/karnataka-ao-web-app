@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Karnataka AO Handbook portal{% endblock %}
+
+{% block header_actions %}
+{% if is_admin %}
+<div class="toolbar-group">
+    <a href="/admin/logout" class="toolbar-btn" style="border-radius: 20px; font-size: 0.8rem; background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.2); color: #fca5a5; text-decoration: none;">
+        <i class="fa-solid fa-sign-out-alt"></i> Admin Logout
+    </a>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    {% if not is_admin %}
+    <!-- Admin Login Form -->
+    <div class="glass-container form-card" style="margin: 0 auto;">
+        <h1 class="form-title">Admin Dashboard</h1>
+        <p class="form-subtitle">Enter admin password to access analytics and user lists.</p>
+        
+        {% if error %}
+        <div style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; padding: 0.75rem; border-radius: 8px; font-size: 0.9rem; margin-bottom: 1.5rem; text-align: center;">
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <form method="POST" action="/admin">
+            <div class="form-group" style="margin-bottom: 2rem;">
+                <label for="password" class="form-label">Admin Password</label>
+                <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="btn">
+                <i class="fa-solid fa-lock-open"></i> Login to Dashboard
+            </button>
+        </form>
+    </div>
+    {% else %}
+    <!-- Admin Dashboard Content -->
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 0.5rem;">
+        <div>
+            <h1 style="font-family: var(--font-heading); font-weight: 800; font-size: 2.2rem; color: #fff;">Portal Analytics</h1>
+            <p style="color: var(--text-secondary); font-size: 0.95rem;">Monitor real-time handbook registrations and reading logs.</p>
+        </div>
+        <a href="/admin/export" class="btn" style="width: auto; padding: 0.7rem 1.25rem; font-size: 0.9rem; background: linear-gradient(90deg, #ffd54f 0%, #ffb300 100%); color: #0b1a13; font-weight: 700; box-shadow: 0 4px 12px var(--accent-glow);">
+            <i class="fa-solid fa-file-csv"></i> Export Users (CSV)
+        </a>
+    </div>
+
+    <!-- Stats Cards Grid -->
+    <div class="stats-grid">
+        <div class="glass-container stat-card">
+            <span class="stat-val">{{ stats.total_users }}</span>
+            <span class="stat-label">Registered Candidates</span>
+        </div>
+        <div class="glass-container stat-card">
+            <span class="stat-val">{{ stats.total_views }}</span>
+            <span class="stat-label">Total Page Views</span>
+        </div>
+        <div class="glass-container stat-card">
+            <span class="stat-val">
+                {% if stats.top_pages %}
+                    Page {{ stats.top_pages[0].page_number }}
+                {% else %}
+                    N/A
+                {% endif %}
+            </span>
+            <span class="stat-label">Most Read Page</span>
+        </div>
+        <div class="glass-container stat-card">
+            <span class="stat-val">
+                {% if stats.total_users > 0 %}
+                    {{ (stats.total_views / stats.total_users) | round(1) }}
+                {% else %}
+                    0
+                {% endif %}
+            </span>
+            <span class="stat-label">Avg. Views Per User</span>
+        </div>
+    </div>
+
+    <!-- Main Section -->
+    <div class="glass-container" style="padding: 2rem;">
+        <div class="admin-controls" style="margin-bottom: 1.5rem;">
+            <h2 style="font-family: var(--font-heading); font-size: 1.3rem; font-weight: 700;">Registered Candidates Directory</h2>
+            
+            <div class="search-wrapper">
+                <input type="text" id="adminSearchInput" class="search-input" placeholder="Search by name, mobile, or college...">
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="user-table" id="usersTable">
+                <thead>
+                    <tr>
+                        <th style="width: 50px;" class="text-center">ID</th>
+                        <th>Candidate Name</th>
+                        <th>Mobile Number</th>
+                        <th>College / University</th>
+                        <th>Email Address</th>
+                        <th>Registered On</th>
+                        <th class="text-center">Page Views</th>
+                        <th>Last Active</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td class="text-center" style="font-weight: 600; color: var(--text-secondary);">{{ user.id }}</td>
+                        <td style="font-weight: 700; color: #fff;">{{ user.full_name }}</td>
+                        <td style="font-family: monospace; font-size: 0.95rem;">{{ user.mobile_number }}</td>
+                        <td>{{ user.college_name }}</td>
+                        <td style="color: var(--text-secondary);">{{ user.email_address or '—' }}</td>
+                        <td style="font-size: 0.85rem; color: var(--text-muted);">{{ user.registration_date }}</td>
+                        <td class="text-center"><span class="badge">{{ user.total_page_views }}</span></td>
+                        <td style="font-size: 0.85rem; color: var(--text-muted);">{{ user.last_active or '—' }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center" style="padding: 3rem; color: var(--text-muted);">
+                            <i class="fa-solid fa-users-slash" style="font-size: 2rem; margin-bottom: 0.5rem; display: block;"></i>
+                            No registered users found yet.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+{% if is_admin %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('adminSearchInput');
+    const table = document.getElementById('usersTable');
+    const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+    searchInput.addEventListener('keyup', () => {
+        const query = searchInput.value.toLowerCase().trim();
+
+        for (let i = 0; i < rows.length; i++) {
+            const row = rows[i];
+            if (row.cells.length < 4) continue; // Skip "No registered users" row
+
+            const name = row.cells[1].textContent.toLowerCase();
+            const mobile = row.cells[2].textContent.toLowerCase();
+            const college = row.cells[3].textContent.toLowerCase();
+            const email = row.cells[4].textContent.toLowerCase();
+
+            if (name.includes(query) || mobile.includes(query) || college.includes(query) || email.includes(query)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        }
+    });
+});
+</script>
+{% endif %}
+{% endblock %}

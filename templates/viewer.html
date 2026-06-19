@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Viewer - Karnataka AO Exam Master Revision Handbook{% endblock %}
+
+{% block header_actions %}
+<div class="toolbar-group" style="gap: 1rem;">
+    <span style="font-size: 0.85rem; color: var(--text-secondary); display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(255, 255, 255, 0.05); padding: 0.35rem 0.75rem; border-radius: 20px; border: 1px solid var(--card-border);">
+        <i class="fa-solid fa-user" style="color: var(--accent-color);"></i> {{ session.user_name }}
+    </span>
+    <a href="/logout" class="toolbar-btn" style="border-radius: 20px; font-size: 0.8rem; background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.2); color: #fca5a5; text-decoration: none;">
+        <i class="fa-solid fa-sign-out-alt"></i> Change User
+    </a>
+</div>
+{% endblock %}
+
+{% block content %}
+<div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
+    <!-- Protection Alert Notice -->
+    <div class="protection-notice">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <span><strong>Security Policy Enabled:</strong> Copying, printing, and sharing are disabled. Every page is watermarked with <strong>{{ session.user_name }} ({{ session.user_mobile }})</strong>.</span>
+    </div>
+
+    <!-- Viewer Window -->
+    <div class="glass-container viewer-container">
+        <!-- Toolbar -->
+        <div class="viewer-toolbar">
+            <div class="toolbar-group">
+                <button id="prevPageBtn" class="toolbar-btn" disabled>
+                    <i class="fa-solid fa-chevron-left"></i> Previous
+                </button>
+                <div class="page-indicator">
+                    Page <input type="number" id="pageNumInput" value="1" min="1" max="{{ total_pages }}" style="width: 45px; background: rgba(0,0,0,0.4); border: 1px solid var(--card-border); color: white; text-align: center; border-radius: 4px; padding: 0.2rem 0;"> of <span id="totalPages">{{ total_pages }}</span>
+                </div>
+                <button id="nextPageBtn" class="toolbar-btn">
+                    Next <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+            
+            <div class="toolbar-group">
+                <button id="zoomOutBtn" class="toolbar-btn" title="Zoom Out">
+                    <i class="fa-solid fa-magnifying-glass-minus"></i>
+                </button>
+                <button id="zoomFitBtn" class="toolbar-btn" title="Fit Width">
+                    Fit Page
+                </button>
+                <button id="zoomInBtn" class="toolbar-btn" title="Zoom In">
+                    <i class="fa-solid fa-magnifying-glass-plus"></i>
+                </button>
+                <button id="fullscreenBtn" class="toolbar-btn" title="Toggle Fullscreen">
+                    <i class="fa-solid fa-expand"></i> Fullscreen
+                </button>
+            </div>
+            
+            <div class="toolbar-group" style="font-size: 0.8rem; color: var(--text-muted);">
+                <span>Use keyboard <kbd>&larr;</kbd> and <kbd>&rarr;</kbd> keys to flip pages</span>
+            </div>
+        </div>
+
+        <!-- Viewport -->
+        <div class="viewer-viewport" id="viewerViewport">
+            <!-- Loading Overlay -->
+            <div class="viewer-loading" id="viewerLoading">
+                <div class="spinner"></div>
+                <p style="color: var(--text-secondary); font-size: 0.95rem; font-weight: 500;">Securing & loading page...</p>
+            </div>
+
+            <!-- Page Container wrapper -->
+            <div class="document-page-wrapper" id="pageWrapper" style="width: 100%; max-width: 800px;">
+                <img id="pageImage" class="document-page-img" src="" alt="Handbook Page">
+                
+                <!-- Secondary CSS Watermark Overlay -->
+                <div class="page-overlay-watermark">
+                    {% for i in range(12) %}
+                    <div class="watermark-cell">{{ session.user_mobile }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
