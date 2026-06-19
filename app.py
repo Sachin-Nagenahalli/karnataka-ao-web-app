@@ -2,7 +2,7 @@ import os
 import io
 import csv
 from datetime import datetime
-from flask import Flask, render_template, request, redirect, url_for, session, flash, Response, abort
+from flask import Flask, render_template, request, redirect, url_for, session, flash, Response, abort, send_file
 import fitz  # PyMuPDF
 from PIL import Image, ImageDraw, ImageFont
 
@@ -288,6 +288,19 @@ def admin_logout():
     """Logs the admin out of the session."""
     session.pop('is_admin', None)
     return redirect(url_for('admin'))
+
+@app.route('/download-poster')
+def download_poster():
+    """Serves the marketing poster as a download file."""
+    poster_path = os.path.join(config.BASE_DIR, 'data', 'karnataka_ao_handbook_poster.png')
+    if not os.path.exists(poster_path):
+        abort(404, description="Poster file not found on the server.")
+    return send_file(
+        poster_path, 
+        mimetype='image/png', 
+        as_attachment=True, 
+        download_name='karnataka_ao_handbook_poster.png'
+    )
 
 if __name__ == '__main__':
     # Initialize DB (safety check)
