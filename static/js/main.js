@@ -297,4 +297,94 @@ document.addEventListener('DOMContentLoaded', () => {
         // Initialize the first page
         loadPage(1);
     }
+
+    // ----------------------------------------------------------------
+    // 4. Candidate Feedback Drawer Controls
+    // ----------------------------------------------------------------
+    const openFeedbackBtn = document.getElementById('openFeedbackBtn');
+    const closeFeedbackBtn = document.getElementById('closeFeedbackBtn');
+    const feedbackDrawer = document.getElementById('feedbackDrawer');
+    const drawerOverlay = document.getElementById('drawerOverlay');
+    const feedbackForm = document.getElementById('feedbackForm');
+    const feedbackStatus = document.getElementById('feedbackStatus');
+    const feedbackMessage = document.getElementById('feedbackMessage');
+    const submitFeedbackBtn = document.getElementById('submitFeedbackBtn');
+
+    if (openFeedbackBtn && feedbackDrawer && drawerOverlay) {
+        // Toggle Open Drawer
+        openFeedbackBtn.addEventListener('click', () => {
+            feedbackDrawer.classList.add('open');
+            drawerOverlay.classList.add('visible');
+        });
+
+        // Toggle Close Drawer
+        const closeDrawer = () => {
+            feedbackDrawer.classList.remove('open');
+            drawerOverlay.classList.remove('visible');
+            // Reset status
+            feedbackStatus.style.display = 'none';
+            feedbackStatus.textContent = '';
+            feedbackStatus.className = 'feedback-status';
+        };
+
+        closeFeedbackBtn.addEventListener('click', closeDrawer);
+        drawerOverlay.addEventListener('click', closeDrawer);
+
+        // Submit Feedback Form via AJAX
+        if (feedbackForm) {
+            feedbackForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const msg = feedbackMessage.value.trim();
+                if (!msg) return;
+
+                // Disable submit button during processing
+                submitFeedbackBtn.disabled = true;
+                submitFeedbackBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting...';
+                
+                feedbackStatus.style.display = 'none';
+
+                const formData = new FormData();
+                formData.append('message', msg);
+
+                fetch('/submit-feedback', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(res => res.json())
+                .then(data => {
+                    feedbackStatus.style.display = 'block';
+                    if (data.status === 'success') {
+                        feedbackStatus.textContent = data.message;
+                        feedbackStatus.style.background = 'rgba(76, 175, 80, 0.15)';
+                        feedbackStatus.style.border = '1px solid rgba(76, 175, 80, 0.3)';
+                        feedbackStatus.style.color = '#a5d6a7';
+                        
+                        // Clear textarea
+                        feedbackMessage.value = '';
+                        
+                        // Auto close drawer after 2.5 seconds
+                        setTimeout(closeDrawer, 2500);
+                    } else {
+                        feedbackStatus.textContent = data.message || 'An error occurred. Please try again.';
+                        feedbackStatus.style.background = 'rgba(239, 68, 68, 0.15)';
+                        feedbackStatus.style.border = '1px solid rgba(239, 68, 68, 0.3)';
+                        feedbackStatus.style.color = '#ef9a9a';
+                    }
+                })
+                .catch(err => {
+                    console.error('Error submitting feedback:', err);
+                    feedbackStatus.style.display = 'block';
+                    feedbackStatus.textContent = 'Network error occurred. Please check your connection.';
+                    feedbackStatus.style.background = 'rgba(239, 68, 68, 0.15)';
+                    feedbackStatus.style.border = '1px solid rgba(239, 68, 68, 0.3)';
+                    feedbackStatus.style.color = '#ef9a9a';
+                })
+                .finally(() => {
+                    submitFeedbackBtn.disabled = false;
+                    submitFeedbackBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit Feedback';
+                });
+            });
+        }
+    }
 });

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Portal Suspended - Karnataka AO Revision Handbook{% endblock %}
+
+{% block content %}
+<div class="glass-container form-card" style="margin: 0 auto; text-align: center; padding: 3rem 2rem;">
+    <div style="font-size: 4rem; color: var(--accent-color); margin-bottom: 1.5rem; animation: pulse 2s infinite;">
+        <i class="fa-solid fa-lock"></i>
+    </div>
+    
+    <h1 class="form-title" style="font-size: 1.8rem; margin-bottom: 1rem;">Portal Temporarily Suspended</h1>
+    <p class="form-subtitle" style="font-size: 1.05rem; line-height: 1.6; margin-bottom: 2rem; color: var(--text-secondary);">
+        The administrator has temporarily paused candidate access to the handbook portal. 
+        Please check back later or contact the administrator if you have any questions.
+    </p>
+
+    <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(255, 255, 255, 0.05); padding: 0.6rem 1.2rem; border-radius: 30px; border: 1px solid var(--card-border); font-size: 0.85rem; color: var(--text-muted);">
+        <i class="fa-solid fa-circle-info" style="color: var(--accent-color);"></i>
+        <span>Preparations for Karnataka AO Exam 2026</span>
+    </div>
+</div>
+
+<style>
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 1;
+        text-shadow: 0 0 15px var(--accent-glow);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+}
+</style>
+{% endblock %}

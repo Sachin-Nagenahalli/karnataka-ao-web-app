@@ -78,5 +78,35 @@
             </div>
         </div>
     </div>
+
+    <!-- Floating Feedback Trigger Button -->
+    <button class="feedback-fab" id="openFeedbackBtn" title="Suggest Changes / Send Message">
+        <i class="fa-solid fa-comment-dots"></i>
+        <span class="feedback-fab-text">Suggest Changes</span>
+    </button>
+
+    <!-- Sliding Feedback Drawer -->
+    <div class="feedback-drawer" id="feedbackDrawer">
+        <div class="drawer-header">
+            <h3><i class="fa-solid fa-comment-medical"></i> Suggest Changes</h3>
+            <button class="drawer-close-btn" id="closeFeedbackBtn">&times;</button>
+        </div>
+        <div class="drawer-body">
+            <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 1.5rem;">
+                Want something added, corrected, or changed in this handbook? Write your message below to send it directly to the admin.
+            </p>
+            <form id="feedbackForm">
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label for="feedbackMessage" class="form-label" style="font-size: 0.85rem;">Message details</label>
+                    <textarea id="feedbackMessage" name="message" class="form-control" rows="6" placeholder="Type your suggestion, correction, or complaint..." required style="resize: none; background: rgba(0,0,0,0.3); border-color: rgba(255,255,255,0.1); color: white;"></textarea>
+                </div>
+                <button type="submit" class="btn" id="submitFeedbackBtn">
+                    <i class="fa-solid fa-paper-plane"></i> Submit Feedback
+                </button>
+            </form>
+            <div id="feedbackStatus" class="feedback-status" style="margin-top: 1rem; padding: 0.75rem; border-radius: 8px; font-size: 0.85rem; display: none; text-align: center;"></div>
+        </div>
+    </div>
+    <div class="drawer-overlay" id="drawerOverlay"></div>
 </div>
 {% endblock %}

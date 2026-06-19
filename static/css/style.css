@@ -555,3 +555,192 @@ footer {
 .viewer-container:-webkit-full-screen .viewer-viewport {
     height: calc(100vh - 60px);
 }
+
+/* ---------------------------------------------------------------- */
+/* Feedback & Toggles CSS */
+/* ---------------------------------------------------------------- */
+
+/* Feedback Floating Action Button (FAB) */
+.feedback-fab {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: linear-gradient(135deg, var(--primary-color) 0%, #1b5e20 100%);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: white;
+    padding: 0.85rem 1.25rem;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 8px 32px rgba(46, 125, 50, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    z-index: 999;
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: var(--transition-smooth);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.feedback-fab:hover {
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 12px 36px rgba(46, 125, 50, 0.6), 0 0 15px var(--accent-glow);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.feedback-fab i {
+    font-size: 1.1rem;
+}
+
+/* Feedback Drawer Styling */
+.feedback-drawer {
+    position: fixed;
+    top: 0;
+    right: -400px; /* Hidden off-screen */
+    width: 400px;
+    max-width: 90vw;
+    height: 100%;
+    background: rgba(11, 26, 19, 0.96);
+    border-left: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    box-shadow: -10px 0 40px rgba(0, 0, 0, 0.5);
+    z-index: 1001;
+    transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    flex-direction: column;
+}
+
+.feedback-drawer.open {
+    right: 0; /* Slide in */
+}
+
+.drawer-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.drawer-header h3 {
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.drawer-close-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1.8rem;
+    cursor: pointer;
+    line-height: 1;
+    transition: var(--transition-smooth);
+}
+
+.drawer-close-btn:hover {
+    color: #fff;
+    transform: rotate(90deg);
+}
+
+.drawer-body {
+    padding: 1.5rem;
+    flex: 1;
+    overflow-y: auto;
+}
+
+/* Drawer Overlay Backdrop */
+.drawer-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+}
+
+.drawer-overlay.visible {
+    opacity: 1;
+    pointer-events: all;
+}
+
+/* Admin Toggle Switch Styling */
+.switch-toggle {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 22px;
+}
+
+.switch-toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider-toggle {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.1);
+    transition: .3s;
+    border-radius: 22px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.slider-toggle::before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 3px;
+    background-color: #9ca3af;
+    transition: .3s;
+    border-radius: 50%;
+}
+
+input:checked + .slider-toggle {
+    background-color: rgba(76, 175, 80, 0.2);
+    border-color: rgba(76, 175, 80, 0.4);
+}
+
+input:checked + .slider-toggle::before {
+    transform: translateX(22px);
+    background-color: #4caf50;
+    box-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
+}
+
+/* Mobile Adjustments for FAB */
+@media (max-width: 600px) {
+    .feedback-fab {
+        bottom: 20px;
+        right: 20px;
+        padding: 0.7rem;
+        border-radius: 50%;
+    }
+    .feedback-fab-text {
+        display: none;
+    }
+    .feedback-drawer {
+        width: 100%;
+        border-left: none;
+    }
+}
+

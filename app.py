@@ -110,7 +110,9 @@ def get_watermarked_page(page_num, name, mobile, college):
 
 @app.route('/')
 def index():
-    """Home redirect logic based on registration state."""
+    """Home redirect logic based on registration state and portal status."""
+    if not database.is_portal_active() and not session.get('is_admin'):
+        return redirect(url_for('maintenance'))
     if 'user_id' in session:
         return redirect(url_for('viewer'))
     return redirect(url_for('register'))
@@ -118,6 +120,8 @@ def index():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     """Handles candidate registration form rendering and validation."""
+    if not database.is_portal_active() and not session.get('is_admin'):
+        return redirect(url_for('maintenance'))
     if 'user_id' in session:
         return redirect(url_for('viewer'))
 
@@ -168,6 +172,8 @@ def register():
 @app.route('/viewer')
 def viewer():
     """Document reader endpoint for authorized sessions."""
+    if not database.is_portal_active() and not session.get('is_admin'):
+        return redirect(url_for('maintenance'))
     if 'user_id' not in session:
         return redirect(url_for('register'))
 
@@ -187,6 +193,8 @@ def api_page(page_num):
     Securely serves a watermarked page image.
     Requires an active registration session.
     """
+    if not database.is_portal_active() and not session.get('is_admin'):
+        abort(403, description="Access suspended. The handbook portal is currently offline.")
     if 'user_id' not in session:
         abort(403, description="Unauthorized access. Please register first.")
 
@@ -223,6 +231,47 @@ def logout():
     session.pop('user_college', None)
     return redirect(url_for('register'))
 
+@app.route('/maintenance')
+def maintenance():
+    """Renders the portal suspended / maintenance screen."""
+    if database.is_portal_active():
+        return redirect(url_for('index'))
+    return render_template('maintenance.html')
+
+@app.route('/submit-feedback', methods=['POST'])
+def submit_feedback():
+    """Accepts and records feedback submissions from authorized users."""
+    if 'user_id' not in session:
+        return {"status": "error", "message": "Session expired. Please re-register."}, 403
+    
+    message = request.form.get('message', '').strip()
+    if not message:
+        return {"status": "error", "message": "Feedback message cannot be empty."}, 400
+    
+    try:
+        database.submit_feedback(session['user_id'], message)
+        return {"status": "success", "message": "Thank you! Your feedback has been sent to the admin."}
+    except Exception as e:
+        app.logger.error(f"Error submitting feedback: {str(e)}")
+        return {"status": "error", "message": "An error occurred while saving feedback. Please try again."}, 500
+
+@app.route('/admin/toggle-portal', methods=['POST'])
+def toggle_portal():
+    """Toggles candidate access to the handbook portal."""
+    if not session.get('is_admin', False):
+        return {"status": "error", "message": "Unauthorized access."}, 403
+    
+    data = request.get_json() or {}
+    active = data.get('active', True)
+    
+    try:
+        database.set_setting('portal_active', str(active).lower())
+        status_str = "activated" if active else "suspended"
+        return {"status": "success", "message": f"Candidate portal has been successfully {status_str}."}
+    except Exception as e:
+        app.logger.error(f"Error toggling portal: {str(e)}")
+        return {"status": "error", "message": "Failed to update portal status."}, 500
+
 # ----------------------------------------------------------------
 # Admin Section
 # ----------------------------------------------------------------
@@ -245,9 +294,19 @@ def admin():
     if is_admin:
         users = database.get_all_users()
         stats = database.get_stats()
-        return render_template('admin.html', is_admin=True, users=users, stats=stats)
+        feedbacks = database.get_all_feedback()
+        portal_active = database.is_portal_active()
+        return render_template(
+            'admin.html', 
+            is_admin=True, 
+            users=users, 
+            stats=stats, 
+            feedbacks=feedbacks, 
+            portal_active=portal_active
+        )
         
     return render_template('admin.html', is_admin=False, error=error)
+
 
 @app.route('/admin/export')
 def admin_export():

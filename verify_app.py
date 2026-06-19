@@ -91,8 +91,12 @@ def run_tests():
     conn = database.get_db_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute("DELETE FROM views WHERE user_id = ?", (user_id,))
-        cursor.execute("DELETE FROM users WHERE id = ?", (user_id,))
+        if database.IS_POSTGRES:
+            cursor.execute("DELETE FROM views WHERE user_id = %s", (user_id,))
+            cursor.execute("DELETE FROM users WHERE id = %s", (user_id,))
+        else:
+            cursor.execute("DELETE FROM views WHERE user_id = ?", (user_id,))
+            cursor.execute("DELETE FROM users WHERE id = ?", (user_id,))
         conn.commit()
         print("[+] SUCCESS: Test entries cleaned from database.")
     except Exception as e:
